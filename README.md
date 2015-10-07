@@ -1,4 +1,7 @@
-# MVPSample
-A sample project showing the use of MVP in android. 
+# Rx java with Android
 
-Presented as part of my talk: [Wrting Better Android Apps with MVP](http://slides.com/anupcowkur/writing-better-android-apps-with-mvp).
+Sample for Rx Java which shows retaining Observable on rotation using AsyncSubject. This is based on input from one fo the stackoverflow posts. 
+
+There is a similar sample on github https://github.com/pmellaaho/RxApp (Thanks to the author)
+
+Based on the sample from https://github.com/anupcowkur/MVPSample
