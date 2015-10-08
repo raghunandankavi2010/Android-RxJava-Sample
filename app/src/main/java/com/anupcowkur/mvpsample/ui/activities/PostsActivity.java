@@ -26,7 +26,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
 import retrofit.http.GET;
 import rx.Observable;
 import rx.Subscriber;
