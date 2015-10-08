@@ -18,7 +18,6 @@ public class NetworkModule {
     PostsAPI providePostsApi() {
         OkHttpClient okHttpClient = new OkHttpClient();
 
-
         Retrofit retrofit =new Retrofit.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
                 .client(okHttpClient)
