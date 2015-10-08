@@ -17,8 +17,6 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -54,7 +52,6 @@ public class PostsActivityTest {
         posts.add(new Post(9, 9, "title 9", "body 9"));
         posts.add(new Post(10, 10, "title 10", "body 10"));
 
-        EventBus.getDefault().post(new NewPostsEvent(posts));
 
         onView(withId(R.id.posts_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_view)).check(matches(not(isDisplayed())));
@@ -64,8 +61,6 @@ public class PostsActivityTest {
     @Test
     @MediumTest
     public void testShouldShowErrorViewOnNetworkError() {
-
-        EventBus.getDefault().post(new ErrorEvent());
 
         onView(withId(R.id.error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.posts_recycler_view)).check(matches(not(isDisplayed())));
