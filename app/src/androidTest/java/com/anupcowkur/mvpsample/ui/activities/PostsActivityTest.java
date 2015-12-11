@@ -1,21 +1,23 @@
 package com.anupcowkur.mvpsample.ui.activities;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
+import android.test.suitebuilder.annotation.LargeTest;
 
 import com.anupcowkur.mvpsample.R;
 import com.anupcowkur.mvpsample.events.ErrorEvent;
 import com.anupcowkur.mvpsample.events.NewPostsEvent;
-import com.anupcowkur.mvpsample.model.data.Post;
+import com.anupcowkur.mvpsample.model.pojo.Post;
 import com.anupcowkur.mvpsample.utils.ActivityRule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.greenrobot.event.EventBus;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -24,6 +26,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
+@LargeTest
 public class PostsActivityTest {
 
     @Rule
@@ -37,8 +40,7 @@ public class PostsActivityTest {
     }
 
     @Test
-    @MediumTest
-    public void testShouldShowUpdateRecyclerViewOnNewPosts() {
+    public void testShouldShowRecyclerViewOnNewPosts() {
 
         List<Post> posts = new ArrayList<>();
         posts.add(new Post(1, 1, "title 1", "body 1"));
@@ -52,6 +54,7 @@ public class PostsActivityTest {
         posts.add(new Post(9, 9, "title 9", "body 9"));
         posts.add(new Post(10, 10, "title 10", "body 10"));
 
+        EventBus.getDefault().post(new NewPostsEvent(posts));
 
         onView(withId(R.id.posts_recycler_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_view)).check(matches(not(isDisplayed())));
@@ -59,8 +62,9 @@ public class PostsActivityTest {
     }
 
     @Test
-    @MediumTest
     public void testShouldShowErrorViewOnNetworkError() {
+
+        EventBus.getDefault().post(new ErrorEvent());
 
         onView(withId(R.id.error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.posts_recycler_view)).check(matches(not(isDisplayed())));
