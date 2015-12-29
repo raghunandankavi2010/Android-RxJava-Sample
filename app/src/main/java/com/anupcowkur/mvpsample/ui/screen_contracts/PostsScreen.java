@@ -8,5 +8,10 @@ import rx.Observable;
 
 public interface PostsScreen {
 
+    void onError(Throwable e);
+
+    void onNext(List<Post> posts);
+
+    void onCompleted();
 
 }

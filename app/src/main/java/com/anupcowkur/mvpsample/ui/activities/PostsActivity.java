@@ -7,9 +7,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anupcowkur.mvpsample.R;
-import com.anupcowkur.mvpsample.RxBus;
+//import com.anupcowkur.mvpsample.RxBus;
 import com.anupcowkur.mvpsample.dagger.DaggerInjector;
 import com.anupcowkur.mvpsample.events.ErrorEvent;
 import com.anupcowkur.mvpsample.events.NewPostsEvent;
@@ -26,32 +27,32 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import retrofit.http.POST;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
 
-public class PostsActivity extends AppCompatActivity {//implements PostsScreen {
+public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
 
-    private class PostsListSubscriber extends Subscriber<List<Post>> {
-
-        @Override
-        public void onCompleted() {
-
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            postsRecyclerView.setVisibility(View.VISIBLE);
-            errorView.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onNext(List<Post> mPost) {
-            postsListAdapter.addPosts(mPost);
-        }
+    @Override
+    public void onError(Throwable e) {
+        postsRecyclerView.setVisibility(View.VISIBLE);
+        errorView.setVisibility(View.GONE);
     }
 
+    @Override
+    public void onNext(List<Post> posts) {
+
+        postsListAdapter.addPosts(posts);
+    }
+
+    @Override
+    public void onCompleted() {
+
+        Toast.makeText(PostsActivity.this.getApplicationContext(),"Completed",Toast.LENGTH_SHORT)
+                .show();
+    }
 
     @Inject
     PostsPresenter postsPresenter;
@@ -64,23 +65,29 @@ public class PostsActivity extends AppCompatActivity {//implements PostsScreen {
 
     PostsListAdapter postsListAdapter;
 
-    RxBus rxBus;
+    //RxBus rxBus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_posts);
-        rxBus = RxBus.getInstance();
+        //rxBus = RxBus.getInstance();
 
         DaggerInjector.get().inject(this);
+        postsPresenter.setContext(this);
         ButterKnife.inject(this);
 
         initRecyclerView();
         postsPresenter.loadPostsFromAPI();
-        rxBus.toObserverable().subscribe(new Action1<Object>() {
+       /* rxBus.toObserverable().subscribe(new Action1<Object>() {
             @Override
             public void call(Object event) {
 
+                if(event instanceof String)
+                {
+                    Toast.makeText(PostsActivity.this.getApplicationContext(),"Completed",Toast.LENGTH_SHORT)
+                            .show();
+                }
                 if(event instanceof NewPostsEvent) {
                     NewPostsEvent newPostsEvent = (NewPostsEvent)event;
                     postsListAdapter.addPosts(newPostsEvent.getPosts());
@@ -91,7 +98,7 @@ public class PostsActivity extends AppCompatActivity {//implements PostsScreen {
                 }
             }
 
-            });
+            });*/
     }
 
     @Override
@@ -103,6 +110,7 @@ public class PostsActivity extends AppCompatActivity {//implements PostsScreen {
     @Override
     protected void onStop() {
         super.onStop();
+        postsPresenter.unSubScribe();
        //EventBus.getDefault().unregister(this);
     }
 

@@ -1,8 +1,7 @@
 # MVPSample
-A sample project showing the use of MVP in android. A fork from Annup Cowkur repository. 
 
-A talk by Anup Cowkur on MVP : [Wrting Better Android Apps with MVP](http://slides.com/anupcowkur/writing-better-android-apps-with-mvp).
+A sample project showing the use of MVP in android. Original Author : Anup Cowkur. I forked the repository.
 
-Everything is the same except the use of Rx Java as EvetBus with Subject.
+Added cache invalidatation if observable does not emit any items.
 
-http://reactivex.io/RxJava/javadoc/rx/subjects/PublishSubject.html
+Talk given by Anup Cowkur at B.A.U.G: [Wrting Better Android Apps with MVP](http://slides.com/anupcowkur/writing-better-android-apps-with-mvp).
