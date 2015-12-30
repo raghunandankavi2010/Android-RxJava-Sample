@@ -3,11 +3,9 @@ package com.anupcowkur.mvpsample.model;
 import android.util.Log;
 
 import com.anupcowkur.mvpsample.dagger.DaggerInjector;
-import com.anupcowkur.mvpsample.model.pojo.ListPost;
 import com.anupcowkur.mvpsample.model.pojo.Post;
 import com.squareup.okhttp.OkHttpClient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -19,12 +17,8 @@ import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.Query;
 import rx.Observable;
 import rx.Subscriber;
-import rx.exceptions.CompositeException;
-import rx.subscriptions.CompositeSubscription;
 
 public class PostsAPI {
 

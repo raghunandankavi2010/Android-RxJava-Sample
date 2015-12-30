@@ -13,6 +13,7 @@ import com.anupcowkur.mvpsample.ui.screen_contracts.PostsScreen;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,11 +25,19 @@ import rx.subscriptions.CompositeSubscription;
 
 public class PostsPresenter {
 
-    PostsAPI postsAPI;
-    Observable<List<Post>> m;
+    private PostsAPI postsAPI;
+    private Observable<List<Post>> m;
     //RxBus bus;
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private List<Post> postList = new ArrayList<>();
 
+    public void setPostList(List<Post> mpostList) {
+        this.postList.addAll(mpostList);
+    }
+
+    public List<Post> getPostList() {
+        return postList;
+    }
 
     PostsScreen getdetails;
 
@@ -51,7 +60,9 @@ public class PostsPresenter {
                     @Override
                     public void onNext(List<Post> newPosts) {
                         Log.i("List fetched","Yeah");
+                        setPostList(newPosts);
                         getdetails.onNext(newPosts);
+                        postsAPI.resetCache();
                        // bus.send(new NewPostsEvent(newPosts));
                     }
 
@@ -80,37 +91,15 @@ public class PostsPresenter {
     public void unSubScribe()
     {
         compositeSubscription.unsubscribe();
+        getdetails = null;
     }
+
+
 
     public void setContext(PostsActivity postsActivity)
     {
 
         getdetails =  postsActivity;
-
-    }
-
-    public static class OnSubscribeRefreshingCache<T> implements Observable.OnSubscribe<T> {
-
-        private final AtomicBoolean refresh = new AtomicBoolean(true);
-        private final Observable<T> source;
-        private volatile Observable<T> current;
-
-        public OnSubscribeRefreshingCache(Observable<T> source) {
-            this.source = source;
-            this.current = source;
-        }
-
-        public void reset() {
-            refresh.set(true);
-        }
-
-        @Override
-        public void call(Subscriber<? super T> subscriber) {
-            if (refresh.compareAndSet(true, false)) {
-                current = source.cache();
-            }
-            current.unsafeSubscribe(subscriber);
-        }
 
     }
 

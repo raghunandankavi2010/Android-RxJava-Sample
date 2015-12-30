@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.anupcowkur.mvpsample.R;
@@ -15,30 +16,71 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class PostsListAdapter extends RecyclerView.Adapter<PostsListAdapter.ViewHolder> {
+public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Post> posts;
+
+
+    public static final int VIEW_ITEM = 1;
+    public static final int VIEW_PROG = 0;
 
     public PostsListAdapter() {
         this.posts = new ArrayList<>();
     }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void remove()
+    {
+        posts.remove(posts.size()-1);
+        notifyDataSetChanged();
+    }
+
+
 
     public void addPosts(List<Post> newPosts) {
         posts.addAll(newPosts);
         notifyDataSetChanged();
     }
 
+    public void add(Post o) {
+        posts.add(o);
+        notifyDataSetChanged();
+    }
+
+
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_row_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(v);
-        return viewHolder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+
+        if(position==VIEW_ITEM) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_row_item, parent, false);
+            RecyclerView.ViewHolder  viewHolder = new ViewHolder(v);
+            return viewHolder;
+        }
+        else {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_load_more, parent, false);
+
+            RecyclerView.ViewHolder viewHolder =new ProgressViewHolder(v);
+            return viewHolder;
+        }
+
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.postTitle.setText(posts.get(position).getTitle());
-        viewHolder.postBody.setText(posts.get(position).getBody());
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+
+
+        if(viewHolder instanceof ViewHolder) {
+            ViewHolder vh = (ViewHolder) viewHolder;
+            vh.postTitle.setText(posts.get(position).getTitle());
+            vh.postBody.setText(posts.get(position).getBody());
+        }else
+        {
+            ((ProgressViewHolder)viewHolder).progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
@@ -57,5 +99,19 @@ public class PostsListAdapter extends RecyclerView.Adapter<PostsListAdapter.View
             ButterKnife.inject(this, view);
         }
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        return posts.get(position)!=null? VIEW_ITEM: VIEW_PROG;
+    }
+
+    public static class ProgressViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar progressBar;
+        public ProgressViewHolder(View v) {
+            super(v);
+            progressBar = (ProgressBar)v.findViewById(R.id.progressBar);
+        }
+    }
+
 
 }
