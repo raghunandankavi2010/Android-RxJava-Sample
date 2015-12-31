@@ -45,12 +45,18 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @Override
     public void onError(Throwable e) {
         mRequestPending=false;
-        postsRecyclerView.setVisibility(View.VISIBLE);
-        errorView.setVisibility(View.GONE);
+        postsRecyclerView.setVisibility(View.GONE);
+        errorView.setVisibility(View.VISIBLE);
+        if (loadMore) {
+            loadMore = false;
+            postsListAdapter.remove();
+        }
     }
 
     @Override
     public void onNext(final List<Post> newPosts) {
+        errorView.setVisibility(View.GONE);
+        postsRecyclerView.setVisibility(View.VISIBLE);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -110,19 +116,27 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         initRecyclerView();
         if (savedInstanceState != null) {
             boolean bool = savedInstanceState.getBoolean(REQUEST_PEDNING, false);
-
+            /* Continuing to load data from server. Request was already made */
             if(bool)
             {
                 loadMore = savedInstanceState.getBoolean("loadMore", loadMore);
                 postsPresenter.loadPostsFromAPI();
                 Toast.makeText(getApplicationContext(),"Continuing Subscription",Toast.LENGTH_SHORT).show();
             }
+            /* list after rotation. Handling configuration change */
             if (savedInstanceState.containsKey("list")) {
 
                 Toast.makeText(getApplicationContext(),"List display",Toast.LENGTH_SHORT).show();
                 List<Post> post = savedInstanceState.getParcelableArrayList("list");
                 if (post != null && post.size() > 0)
                     postsListAdapter.addPosts(post);
+            }
+            /* cache is reset no data. so try getting data from server again */
+            else
+            {
+                postsPresenter.loadPostsFromAPI();
+                mRequestPending =true;
+
             }
         } else {
             postsPresenter.loadPostsFromAPI();
@@ -177,7 +191,9 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
+        if(postsListAdapter.getPosts().size()>0) {
+            outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
+        }
         outState.putBoolean(REQUEST_PEDNING, mRequestPending);
         outState.putBoolean("loadMore", loadMore);
 
