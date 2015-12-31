@@ -89,6 +89,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @OnClick(R.id.button)
     public void OnListSampleButtonClick() {
         loadMore = true;
+        mRequestPending =true;
         postsListAdapter.add(null);
         postsPresenter.loadPostsFromAPI();
     }
@@ -109,12 +110,15 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         initRecyclerView();
         if (savedInstanceState != null) {
             boolean bool = savedInstanceState.getBoolean(REQUEST_PEDNING, false);
+
             if(bool)
             {
+                loadMore = savedInstanceState.getBoolean("loadMore", loadMore);
                 postsPresenter.loadPostsFromAPI();
                 Toast.makeText(getApplicationContext(),"Continuing Subscription",Toast.LENGTH_SHORT).show();
             }
-            else if (savedInstanceState.containsKey("list")) {
+            if (savedInstanceState.containsKey("list")) {
+
                 Toast.makeText(getApplicationContext(),"List display",Toast.LENGTH_SHORT).show();
                 List<Post> post = savedInstanceState.getParcelableArrayList("list");
                 if (post != null && post.size() > 0)
@@ -175,6 +179,8 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
         outState.putBoolean(REQUEST_PEDNING, mRequestPending);
+        outState.putBoolean("loadMore", loadMore);
+
 
     }
 

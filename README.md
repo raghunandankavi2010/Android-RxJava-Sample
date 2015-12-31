@@ -1,6 +1,6 @@
 # MVPSample
-A sample project showing the use of MVP in android. This repository is a fork of MVP sample Anup Cowkur.
+A sample project showing the use of MVP in android. This is forked repository. 
 
-Thanks to the author (Anup Cowkur).
+Part of learning process of implementing MVP design pattern in android. Thanks to teh Author (Anup Cowkur).
 
-Presented as part of my talk by Anup Cowkur at Bangalore Android Users Group: [Wrting Better Android Apps with MVP](http://slides.com/anupcowkur/writing-better-android-apps-with-mvp).
+Presented as part of talk by Anup Cowkur at Bangalore Android Users Group: [Wrting Better Android Apps with MVP](http://slides.com/anupcowkur/writing-better-android-apps-with-mvp).

@@ -96,9 +96,8 @@ public class PostsPresenter {
 
 
 
-    public void setContext(PostsActivity postsActivity)
+    public void setContext(PostsScreen postsActivity)
     {
-
         getdetails =  postsActivity;
 
     }
