@@ -84,7 +84,7 @@ public class PostsAPI {
 
         //postsObservable = getApi().getPosts();
 
-        postsObservable.cache();
+        //postsObservable.cache();
         cacher =
                 new OnSubscribeRefreshingCache<List<Post>>(postsObservable);
         postsObservable = Observable.create(cacher);

@@ -1,6 +1,7 @@
 package com.anupcowkur.mvpsample.ui.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void remove()
     {
+        Log.i("Load More pb","dismissed");
         posts.remove(posts.size()-1);
         notifyDataSetChanged();
     }
@@ -41,7 +43,9 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
 
     public void addPosts(List<Post> newPosts) {
+
         posts.addAll(newPosts);
+        Log.i("Size in adapter",""+posts.size());
         notifyDataSetChanged();
     }
 

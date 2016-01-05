@@ -1,5 +1,6 @@
 package com.anupcowkur.mvpsample.dagger.modules;
 
+import com.anupcowkur.mvpsample.RxBus;
 import com.anupcowkur.mvpsample.model.PostsAPI;
 
 import java.lang.annotation.Retention;
@@ -18,6 +19,13 @@ public class AppModule {
     @Singleton
     PostsAPI providePostsApi() {
         return new PostsAPI();
+    }
+
+
+    @Provides
+    @Singleton
+    RxBus provideRxBus() {
+        return new RxBus();
     }
 
 }

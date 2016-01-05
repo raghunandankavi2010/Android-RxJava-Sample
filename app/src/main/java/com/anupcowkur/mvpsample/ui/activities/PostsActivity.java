@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,11 +45,12 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
     @Override
     public void onError(Throwable e) {
-        mRequestPending=false;
+        mRequestPending = false;
         postsRecyclerView.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);
         if (loadMore) {
             loadMore = false;
+            Log.i("Load More",""+loadMore);
             postsListAdapter.remove();
         }
     }
@@ -57,24 +59,23 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     public void onNext(final List<Post> newPosts) {
         errorView.setVisibility(View.GONE);
         postsRecyclerView.setVisibility(View.VISIBLE);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        Log.i("Size in on Next",""+newPosts.size());
+        if (loadMore) {
+            loadMore = false;
+            Log.i("Load More",""+loadMore);
+            postsListAdapter.remove();
+        }
+        postsListAdapter.addPosts(newPosts);
 
-                if (loadMore) {
-                    loadMore = false;
-                    postsListAdapter.remove();
-                }
-                mRequestPending =false;
-                postsListAdapter.addPosts(newPosts);
-            }
-        },5000);
+        mRequestPending = false;
+
 
     }
 
     @Override
     public void onCompleted() {
-       mRequestPending =false;
+        loadMore =false;
+        mRequestPending = false;
         Toast.makeText(PostsActivity.this.getApplicationContext(), "Completed", Toast.LENGTH_SHORT)
                 .show();
     }
@@ -89,16 +90,17 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     TextView errorView;
 
 
-    private boolean loadMore,mRequestPending;
+    private boolean loadMore, mRequestPending;
 
 
     @OnClick(R.id.button)
     public void OnListSampleButtonClick() {
         loadMore = true;
-        mRequestPending =true;
+        mRequestPending = true;
         postsListAdapter.add(null);
         postsPresenter.loadPostsFromAPI();
     }
+
     private Handler handler;
 
     //RxBus rxBus;
@@ -108,7 +110,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
         setContentView(R.layout.activity_posts);
         //rxBus = RxBus.getInstance();
-         handler = new Handler();
+        handler = new Handler();
         DaggerInjector.get().inject(this);
         postsPresenter.setContext(this);
         ButterKnife.inject(this);
@@ -117,30 +119,28 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         if (savedInstanceState != null) {
             boolean bool = savedInstanceState.getBoolean(REQUEST_PEDNING, false);
             /* Continuing to load data from server. Request was already made */
-            if(bool)
-            {
+            if (bool) {
                 loadMore = savedInstanceState.getBoolean("loadMore", loadMore);
                 postsPresenter.loadPostsFromAPI();
-                Toast.makeText(getApplicationContext(),"Continuing Subscription",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Continuing Subscription", Toast.LENGTH_SHORT).show();
             }
             /* list after rotation. Handling configuration change */
-            if (savedInstanceState.containsKey("list")) {
+            if (savedInstanceState.containsKey("saving list")) {
 
-                Toast.makeText(getApplicationContext(),"List display",Toast.LENGTH_SHORT).show();
-                List<Post> post = savedInstanceState.getParcelableArrayList("list");
+                Toast.makeText(getApplicationContext(), "List display", Toast.LENGTH_SHORT).show();
+                List<Post> post = postsPresenter.getListData();
                 if (post != null && post.size() > 0)
                     postsListAdapter.addPosts(post);
             }
             /* cache is reset no data. so try getting data from server again */
-            else
-            {
+            else {
                 postsPresenter.loadPostsFromAPI();
-                mRequestPending =true;
+                mRequestPending = true;
 
             }
         } else {
             postsPresenter.loadPostsFromAPI();
-            mRequestPending =true;
+            mRequestPending = true;
 
         }
        /* rxBus.toObserverable().subscribe(new Action1<Object>() {
@@ -178,6 +178,18 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         //EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+      /*  if(loadMore)
+        {
+            if (loadMore) {
+                loadMore = false;
+                postsListAdapter.remove();
+            }*/
+
+    }
+
     public void initRecyclerView() {
         postsRecyclerView.setHasFixedSize(true);
         postsRecyclerView.setLayoutManager(new LinearLayoutManager(postsRecyclerView.getContext()));
@@ -191,8 +203,10 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(postsListAdapter.getPosts().size()>0) {
-            outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
+        if (postsListAdapter.getPosts().size() > 0) {
+            outState.putString("saving list", "yes");
+            postsPresenter.setListData(postsListAdapter.getPosts());
+            //outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
         }
         outState.putBoolean(REQUEST_PEDNING, mRequestPending);
         outState.putBoolean("loadMore", loadMore);
