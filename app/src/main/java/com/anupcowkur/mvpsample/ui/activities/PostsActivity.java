@@ -29,8 +29,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+
 
 import butterknife.OnClick;
 import retrofit.http.POST;
@@ -83,10 +84,10 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @Inject
     PostsPresenter postsPresenter;
 
-    @InjectView(R.id.posts_recycler_view)
+    @Bind(R.id.posts_recycler_view)
     RecyclerView postsRecyclerView;
 
-    @InjectView(R.id.error_view)
+    @Bind(R.id.error_view)
     TextView errorView;
 
 
@@ -95,6 +96,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
     @OnClick(R.id.button)
     public void OnListSampleButtonClick() {
+
         loadMore = true;
         mRequestPending = true;
         postsListAdapter.add(null);
@@ -113,7 +115,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         handler = new Handler();
         DaggerInjector.get().inject(this);
         postsPresenter.setContext(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         initRecyclerView();
         if (savedInstanceState != null) {

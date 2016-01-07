@@ -78,7 +78,7 @@ public class PostsPresenter {
                     public void onCompleted() {
                         Log.i("Completed","Completed");
                         getdetails.onCompleted();
-                        rxBus.send("Completed");
+                        //rxBus.send("Completed");
                         //bus.send("Completed");
                     }
 

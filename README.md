@@ -1,4 +1,4 @@
-# MVP Sample with RxJava, retrofit and dagger 2.
+# MVP with RxJava, DAGGER 2, and RETROFIT
 A sample project showing the use of MVP in android. This is forked repository and modified for the sake of learning. 
 
 Part of learning process of implementing MVP design pattern in android. Thanks to the Author (Anup Cowkur).
@@ -7,7 +7,7 @@ Presented as part of talk by Anup Cowkur at Bangalore Android Users Group: [Wrti
 
 Note :
 
-There is a load more button to fetch the same feed for testing purpose 9 ( To test load more). 
+There is a load more button to fetch the same feed for testing purpose( To test load more). 
 
 Ideally you will have a recyclerview scroll listener for pagination. 
 

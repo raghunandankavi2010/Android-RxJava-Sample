@@ -13,13 +13,34 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
+    productFlavors {
+        // Define separate dev and prod product flavors.
+        dev {
+            minSdkVersion 16
+        }
+        prod {
+            // The actual minSdkVersion for the application.
+            minSdkVersion 16
+        }
+    }
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+
         exclude 'LICENSE.txt'
         exclude 'META-INF/LICENSE.txt'
     }
@@ -37,9 +58,10 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'io.reactivex:rxandroid:1.0.1'
+
 
     compile 'com.android.support:recyclerview-v7:23.0.0'
     compile 'com.android.support:design:23.0.0'

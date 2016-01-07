@@ -14,8 +14,9 @@ import com.anupcowkur.mvpsample.model.pojo.Post;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+
 
 public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -79,6 +80,7 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         if(viewHolder instanceof ViewHolder) {
             ViewHolder vh = (ViewHolder) viewHolder;
+            Log.i("Adapter title ",""+posts.get(position).getTitle());
             vh.postTitle.setText(posts.get(position).getTitle());
             vh.postBody.setText(posts.get(position).getBody());
         }else
@@ -93,14 +95,14 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        @InjectView(R.id.post_title)
+        @Bind(R.id.post_title)
         TextView postTitle;
-        @InjectView(R.id.post_body)
+        @Bind(R.id.post_body)
         TextView postBody;
 
         public ViewHolder(View view) {
             super(view);
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -110,10 +112,11 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public static class ProgressViewHolder extends RecyclerView.ViewHolder {
-        public ProgressBar progressBar;
+
+        @Bind(R.id.progressBar) ProgressBar progressBar;
         public ProgressViewHolder(View v) {
             super(v);
-            progressBar = (ProgressBar)v.findViewById(R.id.progressBar);
+            ButterKnife.bind(this,v);
         }
     }
 

@@ -3,6 +3,9 @@ package com.anupcowkur.mvpsample.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.anupcowkur.mvpsample.R;
 import com.anupcowkur.mvpsample.dagger.DaggerInjector;
@@ -24,14 +27,24 @@ public class MainActivity extends AppCompatActivity implements MainScreen {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+       /* Button showPosts = (Button)this.findViewById(R.id.show_posts_button);
+        showPosts.setOnClickListener(new View.OnClickListener()
+        {
+
+            @Override
+            public void onClick(View view) {
+
+            }
+        });*/
 
         DaggerInjector.get().inject(this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
     }
 
     @OnClick(R.id.show_posts_button)
     public void OnListSampleButtonClick() {
-        mainPresenter.OnShowPostsButtonClick(this);
+        Toast.makeText(getApplicationContext(),"Posts Activity",Toast.LENGTH_SHORT).show();
+        mainPresenter.OnShowPostsButtonClick(MainActivity.this);
     }
 
     @Override
