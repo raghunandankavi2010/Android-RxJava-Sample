@@ -7,7 +7,7 @@ Presented as part of talk by Anup Cowkur at Bangalore Android Users Group: [Wrti
 
 Note :
 
-There is a load more button to fetch the same feed for testing purpose( To test load more). 
+There is a load more button to fetch the same feed for testing purpose 9 ( To test load more). 
 
 Ideally you will have a recyclerview scroll listener for pagination. 
 

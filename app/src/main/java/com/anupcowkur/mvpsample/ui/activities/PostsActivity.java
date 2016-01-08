@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.anupcowkur.mvpsample.R;
 //import com.anupcowkur.mvpsample.RxBus;
 import com.anupcowkur.mvpsample.dagger.DaggerInjector;
+import com.anupcowkur.mvpsample.dagger.MVPApplication;
 import com.anupcowkur.mvpsample.events.ErrorEvent;
 import com.anupcowkur.mvpsample.events.NewPostsEvent;
 import com.anupcowkur.mvpsample.model.pojo.Post;
@@ -22,6 +23,7 @@ import com.anupcowkur.mvpsample.ui.adapters.PostsListAdapter;
 import com.anupcowkur.mvpsample.ui.decorators.DividerItemDecoration;
 import com.anupcowkur.mvpsample.ui.presenters.PostsPresenter;
 import com.anupcowkur.mvpsample.ui.screen_contracts.PostsScreen;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,6 +113,8 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_posts);
+
+
         //rxBus = RxBus.getInstance();
         handler = new Handler();
         DaggerInjector.get().inject(this);
@@ -183,6 +187,9 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        //RefWatcher refWatcher = MVPApplication.getRefWatcher(this);
+        //refWatcher.watch(this);
       /*  if(loadMore)
         {
             if (loadMore) {

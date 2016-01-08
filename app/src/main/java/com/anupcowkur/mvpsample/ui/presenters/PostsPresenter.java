@@ -68,16 +68,20 @@ public class PostsPresenter {
                     public void onNext(List<Post> newPosts) {
                         Log.i("List fetched","Yeah");
                        /* setPostList(newPosts);*/
-                        getdetails.onNext(newPosts);
-                        //rxBus.send(new NewPostsEvent(newPosts));
-                        postsAPI.resetCache();
+                        if(getdetails!=null) {
+                            getdetails.onNext(newPosts);
+                            //rxBus.send(new NewPostsEvent(newPosts));
+                            postsAPI.resetCache();
+                        }
 
                     }
 
                     @Override
                     public void onCompleted() {
                         Log.i("Completed","Completed");
-                        getdetails.onCompleted();
+                        if(getdetails!=null) {
+                            getdetails.onCompleted();
+                        }
                         //rxBus.send("Completed");
                         //bus.send("Completed");
                     }
@@ -85,9 +89,11 @@ public class PostsPresenter {
                     @Override
                     public void onError(Throwable e) {
                         Log.i("ERROR","Something Wrong");
-                        postsAPI.resetCache();
-                        //rxBus.send(new ErrorEvent(e));
-                        getdetails.onError(e);
+                        if(getdetails!=null) {
+                            postsAPI.resetCache();
+                            //rxBus.send(new ErrorEvent(e));
+                            getdetails.onError(e);
+                        }
                        // bus.send(new ErrorEvent(e));
 
                     }
