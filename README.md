@@ -7,7 +7,7 @@ Presented as part of talk by Anup Cowkur at Bangalore Android Users Group: [Wrti
 
 Note :
 
-There is a load more button to fetch the same feed for testing purpose 9 ( To test load more). 
+There is a load more button to fetch the same feed for testing purpose.( To test load more). 
 
 Ideally you will have a recyclerview scroll listener for pagination. 
 
@@ -15,10 +15,16 @@ This app is for testing purpose only.
 
 Explanation :
 
-We use dagger 2, retrofit and Rx java. Presenter is a singeton. Using Rx Java we can cache the observable. So during configuration change, you are required to subscibe to the same observable rather than creating a new one.
+Model - does the part of fetching data and communicates the same to presenter/
 
-We obsever on the main thread. We can use EventBus or RxJava for event bus. If you don't want another library to be added use RxJava as a EventBus. (http://nerds.weddingpartyapp.com/tech/2014/12/24/implementing-an-event-bus-with-rxjava-rxbus/)
+Presenter - is the middleman communicating with both Model and Presenter/
 
-We can also invalidate the cache once we update the ui. During configuration change if you have data you can set the same in presenter and get the data using gettter.
+View - Just updates the ui.
 
-Since presenter is a singleton and you only inject the same in the activity , you can set and retrieve data easily.
+You make a network request on a different thread and subscribe to it on the main thread with the help of Schedulers.
+
+PostsApi is a singleton. You make network request and fetch the data. Now if there is a configuration change and your request is made and response yet to be recieved, you don't wan to start a new Network operation.
+
+This problem can be taken care of by RxJava operator .cache(). All you need to do is subscribe to the observable and .cache() contines request. You will have the emitted items once.
+
+There is blog post by Dan Lew explaining the same @ http://blog.danlew.net/2014/10/08/grokking-rxjava-part-4/
