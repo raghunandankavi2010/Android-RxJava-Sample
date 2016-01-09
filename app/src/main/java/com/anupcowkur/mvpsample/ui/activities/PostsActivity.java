@@ -2,7 +2,6 @@ package com.anupcowkur.mvpsample.ui.activities;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,15 +14,11 @@ import android.widget.Toast;
 import com.anupcowkur.mvpsample.R;
 //import com.anupcowkur.mvpsample.RxBus;
 import com.anupcowkur.mvpsample.dagger.DaggerInjector;
-import com.anupcowkur.mvpsample.dagger.MVPApplication;
-import com.anupcowkur.mvpsample.events.ErrorEvent;
-import com.anupcowkur.mvpsample.events.NewPostsEvent;
 import com.anupcowkur.mvpsample.model.pojo.Post;
 import com.anupcowkur.mvpsample.ui.adapters.PostsListAdapter;
 import com.anupcowkur.mvpsample.ui.decorators.DividerItemDecoration;
 import com.anupcowkur.mvpsample.ui.presenters.PostsPresenter;
 import com.anupcowkur.mvpsample.ui.screen_contracts.PostsScreen;
-import com.squareup.leakcanary.RefWatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +31,7 @@ import butterknife.ButterKnife;
 
 
 import butterknife.OnClick;
-import retrofit.http.POST;
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action1;
+import de.greenrobot.event.EventBus;
 
 public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
@@ -134,7 +126,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
             if (savedInstanceState.containsKey("saving list")) {
 
                 Toast.makeText(getApplicationContext(), "List display", Toast.LENGTH_SHORT).show();
-                List<Post> post = postsPresenter.getListData();
+                List<Post> post = savedInstanceState.getParcelableArrayList("list");
                 if (post != null && post.size() > 0)
                     postsListAdapter.addPosts(post);
             }
@@ -149,53 +141,24 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
             mRequestPending = true;
 
         }
-       /* rxBus.toObserverable().subscribe(new Action1<Object>() {
-            @Override
-            public void call(Object event) {
-
-                if(event instanceof String)
-                {
-                    Toast.makeText(PostsActivity.this.getApplicationContext(),"Completed",Toast.LENGTH_SHORT)
-                            .show();
-                }
-                if(event instanceof NewPostsEvent) {
-                    NewPostsEvent newPostsEvent = (NewPostsEvent)event;
-                    postsListAdapter.addPosts(newPostsEvent.getPosts());
-
-                }else if(event instanceof ErrorEvent) {
-                    postsRecyclerView.setVisibility(View.VISIBLE);
-                    errorView.setVisibility(View.GONE);
-                }
-            }
-
-            });*/
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        //EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         postsPresenter.unSubScribe();
-        //EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        //RefWatcher refWatcher = MVPApplication.getRefWatcher(this);
-        //refWatcher.watch(this);
-      /*  if(loadMore)
-        {
-            if (loadMore) {
-                loadMore = false;
-                postsListAdapter.remove();
-            }*/
 
     }
 
@@ -214,8 +177,8 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         super.onSaveInstanceState(outState);
         if (postsListAdapter.getPosts().size() > 0) {
             outState.putString("saving list", "yes");
-            postsPresenter.setListData(postsListAdapter.getPosts());
-            //outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
+            //postsPresenter.setListData(postsListAdapter.getPosts());
+            outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
         }
         outState.putBoolean(REQUEST_PEDNING, mRequestPending);
         outState.putBoolean("loadMore", loadMore);
@@ -223,13 +186,22 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
     }
 
-     /*public void onEventMainThread(NewPostsEvent newPostsEvent) {
-        hideError();
-        postsListAdapter.addPosts(newPostsEvent.getPosts());
+     public void onEventMainThread(List<Post> newPosts) {
+         errorView.setVisibility(View.GONE);
+         postsRecyclerView.setVisibility(View.VISIBLE);
+         Log.i("Size in on Next",""+newPosts.size());
+         if (loadMore) {
+             loadMore = false;
+             Log.i("Load More",""+loadMore);
+             postsListAdapter.remove();
+         }
+         postsListAdapter.addPosts(newPosts);
+
+         mRequestPending = false;
     }
 
-    public void onEventMainThread(ErrorEvent errorEvent) {
-        showError();
+    public void onEventMainThread(Throwable errorEvent) {
+        showError(errorEvent);
     }
 
     private void hideError() {
@@ -237,12 +209,18 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         errorView.setVisibility(View.GONE);
     }
 
-    private void showError() {
+    private void showError(Throwable errorEvent) {
+        errorEvent.printStackTrace();
+        mRequestPending = false;
         postsRecyclerView.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);
-        postsPresenter.reset();
+        if (loadMore) {
+            loadMore = false;
+            Log.i("Load More",""+loadMore);
+            postsListAdapter.remove();
+        }
     }
-*/
+
   /*  @Override
     public void getData(List<Post> mPost) {
         postsListAdapter.addPosts(mPost);

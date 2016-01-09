@@ -43,7 +43,11 @@ public class PostsAPI {
     private OnSubscribeRefreshingCache<List<Post>> cacher;
 
 
-    private Observable<List<Post>> postsObservable = Observable.create(new Observable.OnSubscribe<List<Post>>() {
+    private Observable<List<Post>> postsObservable ;
+
+    public Observable<List<Post>> getPost()
+    {
+        postsObservable = Observable.create(new Observable.OnSubscribe<List<Post>>() {
         @Override
         public void call(final Subscriber<? super List<Post>> subscriber) {
 
@@ -53,7 +57,7 @@ public class PostsAPI {
                 @Override
                 public void onResponse(Response<List<Post>> resp) {
                     // Get result Repo from response.body()
-                    Log.i("Size",""+ resp.body());
+                    Log.i("Response ",""+ resp.body());
 
                     try {
                         //total_pages = resp.body().getTotal_pages();
@@ -78,18 +82,22 @@ public class PostsAPI {
             });
         }
     });
+        postsObservable.cache();
+        return postsObservable;
+    }
 
 
-    public Observable<List<Post>> getPostsObservable() {
+ /*   public Observable<List<Post>> getPostsObservable() {
 
-        //postsObservable = getApi().getPosts();
+        postsObservable = getApi().getPosts();
 
-        //postsObservable.cache();
+        postsObservable.cache();
         cacher =
                 new OnSubscribeRefreshingCache<List<Post>>(postsObservable);
         postsObservable = Observable.create(cacher);
+
         return postsObservable;
-    }
+    }*/
 
     public void resetCache() {
 
@@ -99,7 +107,7 @@ public class PostsAPI {
 
     PostService getApi() {
 
-        Log.i("Size",""+"hello");
+        Log.i("get api",""+"called");
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
                 .client(okHttpClient)
@@ -130,6 +138,7 @@ public class PostsAPI {
         public void call(Subscriber<? super T> subscriber) {
             if (refresh.compareAndSet(true, false)) {
                 current = source.cache();
+                Log.i("Using Cache","Current from cache");
             }
             current.unsafeSubscribe(subscriber);
         }

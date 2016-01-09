@@ -80,7 +80,7 @@ public class PostsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         if(viewHolder instanceof ViewHolder) {
             ViewHolder vh = (ViewHolder) viewHolder;
-            Log.i("Adapter title ",""+posts.get(position).getTitle());
+            //Log.i("Adapter title ",""+posts.get(position).getTitle());
             vh.postTitle.setText(posts.get(position).getTitle());
             vh.postBody.setText(posts.get(position).getBody());
         }else

@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import de.greenrobot.event.EventBus;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-@Singleton
+
 public class PostsPresenter {
 
     private PostsAPI postsAPI;
@@ -35,72 +36,34 @@ public class PostsPresenter {
     private CompositeSubscription compositeSubscription = new CompositeSubscription();
     private List<Post> postList = new ArrayList<>();
 
-    public void setPostList(List<Post> mpostList) {
-        this.postList.addAll(mpostList);
-    }
-
-    public List<Post> getPostList() {
-        return postList;
-    }
-
     PostsScreen getdetails;
-    @Inject
-    RxBus rxBus;
 
     @Inject
     public PostsPresenter(PostsAPI postsAPI) {
         this.postsAPI = postsAPI;
+        Log.i("Presenter","called");
         DaggerInjector.get().inject(this);
        // bus = RxBus.getInstance();
 
 
     }
 
+/*    public void getRequest()
+    {
+        m= postsAPI.getPostsObservable();
+        compositeSubscription.add(m.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers
+                .mainThread())
+                .subscribe(new MySubscriber()));
+    }*/
+
     public void loadPostsFromAPI() {
-        m = postsAPI.getPostsObservable();
+        m = postsAPI.getPost();
 
         //compositeSubscription.add(m);
 
         compositeSubscription.add(m.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers
                 .mainThread())
-                .subscribe(new Subscriber<List<Post>>() {
-                    @Override
-                    public void onNext(List<Post> newPosts) {
-                        Log.i("List fetched","Yeah");
-                       /* setPostList(newPosts);*/
-                        if(getdetails!=null) {
-                            getdetails.onNext(newPosts);
-                            //rxBus.send(new NewPostsEvent(newPosts));
-                            postsAPI.resetCache();
-                        }
-
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        Log.i("Completed","Completed");
-                        if(getdetails!=null) {
-                            getdetails.onCompleted();
-                        }
-                        //rxBus.send("Completed");
-                        //bus.send("Completed");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("ERROR","Something Wrong");
-                        if(getdetails!=null) {
-                            postsAPI.resetCache();
-                            //rxBus.send(new ErrorEvent(e));
-                            getdetails.onError(e);
-                        }
-                       // bus.send(new ErrorEvent(e));
-
-                    }
-
-
-                }));
-
+                .subscribe(new MySubscriber()));
 
     }
 
@@ -118,12 +81,36 @@ public class PostsPresenter {
 
     }
 
-    private List<Post> listData;
-    public void setListData(List<Post> listData) {
-        this.listData = listData;
-    }
 
-    public List<Post> getListData() {
-        return this.listData;
+    public class  MySubscriber extends Subscriber<List<Post>>
+    {
+
+        @Override
+        public void onNext(List<Post> newPosts) {
+            Log.i("List fetched","Yeah");
+            //postsAPI.resetCache();
+            EventBus.getDefault().post(newPosts);
+
+
+
+        }
+
+        @Override
+        public void onCompleted() {
+            Log.i("Completed","Completed");
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.i("ERROR","Something Wrong");
+            //postsAPI.resetCache();
+            EventBus.getDefault().post(e);
+
+
+        }
+
+
+
     }
 }

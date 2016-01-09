@@ -7,6 +7,8 @@ import android.app.Application;
 
 import com.anupcowkur.mvpsample.model.PostsAPI;
 import com.anupcowkur.mvpsample.ui.presenters.PostsPresenter;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 
 import javax.inject.Singleton;
@@ -29,10 +31,11 @@ public class RxApp extends Application {
         return sInstance;
     }
 
+    private RefWatcher refWatcher;
     @Override
     public void onCreate() {
         super.onCreate();
-
+        refWatcher = LeakCanary.install(this);
         if (mComponent == null) {
 
             mComponent = DaggerRxApp_NetworkComponent.create();
