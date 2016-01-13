@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 
 //import de.greenrobot.event.EventBus;
 
+import de.greenrobot.event.EventBus;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -42,17 +44,32 @@ public class PostsActivityTest {
     @Test
     public void testShouldShowRecyclerViewOnNewPosts() {
 
-        List<Post> posts = new ArrayList<>();
-        posts.add(new Post(1, 1, "title 1", "body 1"));
-        posts.add(new Post(2, 2, "title 2", "body 2"));
-        posts.add(new Post(3, 3, "title 3", "body 3"));
-        posts.add(new Post(4, 4, "title 4", "body 4"));
+        /*List<Post> posts = new ArrayList<>();
+        Post p = new Post();
+        p.setId(1);
+        p.setUserId(1);
+        p.setTitle("title 1");
+        p.setBody("body 1");
+        Post p2 = new Post();
+        p2.setId(2);
+        p2.setUserId(2);
+        p2.setTitle("title 2");
+        p2.setBody("body 2");
+        Post p3 = new Post();
+        p3.setId(3);
+        p3.setUserId(3);
+        p3.setTitle("title 3");
+        p3.setBody("body 3");
+        posts.add(p);
+        posts.add(p2);
+        posts.add(p3);*/
+  /*      posts.add(new Post(4, 4, "title 4", "body 4"));
         posts.add(new Post(5, 5, "title 5", "body 5"));
         posts.add(new Post(6, 6, "title 6", "body 6"));
         posts.add(new Post(7, 7, "title 7", "body 7"));
         posts.add(new Post(8, 8, "title 8", "body 8"));
         posts.add(new Post(9, 9, "title 9", "body 9"));
-        posts.add(new Post(10, 10, "title 10", "body 10"));
+        posts.add(new Post(10, 10, "title 10", "body 10"));*/
 
         //EventBus.getDefault().post(new NewPostsEvent(posts));
 
@@ -64,7 +81,7 @@ public class PostsActivityTest {
     @Test
     public void testShouldShowErrorViewOnNetworkError() {
 
-        //EventBus.getDefault().post(new ErrorEvent());
+        EventBus.getDefault().post(new Throwable());
 
         onView(withId(R.id.error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.posts_recycler_view)).check(matches(not(isDisplayed())));
