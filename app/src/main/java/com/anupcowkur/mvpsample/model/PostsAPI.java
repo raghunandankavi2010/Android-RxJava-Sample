@@ -57,7 +57,7 @@ public class PostsAPI {
                 @Override
                 public void onResponse(Response<List<Post>> resp) {
                     // Get result Repo from response.body()
-                    Log.i("Response ",""+ resp.body());
+                    //Log.i("Response ",""+ resp.body());
 
                     try {
                         //total_pages = resp.body().getTotal_pages();

@@ -65,10 +65,10 @@ public class NetworkModule {
 
                 //I am logging the response body in debug mode. When I do this I consume the response (OKHttp only lets you do this once) so i have re-build a new one using the cached body
                 String bodyString = response.body().string();
-                Log.i("Response Body", bodyString);
+                //Log.i("Response Body", bodyString);
 
-                Log.i("NetworkModule", String.format("Sending request %s with headers %s ", originalRequest.url(), originalRequest.headers()));
-                Log.i("", (String.format("Got response HTTP %s %s \n\n with body %s \n\n with headers %s ", response.code(), response.message(), bodyString, response.headers())));
+                //Log.i("NetworkModule", String.format("Sending request %s with headers %s ", originalRequest.url(), originalRequest.headers()));
+                Log.i("Response", (String.format("Got response HTTP %s %s \n\n with body %s \n\n with headers %s ", response.code(), response.message(), bodyString, response.headers())));
                 response = response.newBuilder().body(ResponseBody.create(response.body().contentType(), bodyString)).build();
 
 
