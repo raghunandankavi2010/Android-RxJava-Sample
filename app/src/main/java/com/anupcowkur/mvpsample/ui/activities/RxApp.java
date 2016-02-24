@@ -18,13 +18,13 @@ import dagger.Component;
 
 public class RxApp extends Application {
 
-    @Singleton
+    /*@Singleton
     @Component(modules = NetworkModule.class)
     public interface NetworkComponent {
         PostsPresenter getAllPosts();
     }
 
-    private NetworkComponent mComponent = null;
+    private NetworkComponent mComponent = null;*/
 
     private static RxApp sInstance;
     public static RxApp get() {
@@ -36,20 +36,22 @@ public class RxApp extends Application {
     public void onCreate() {
         super.onCreate();
         refWatcher = LeakCanary.install(this);
-        if (mComponent == null) {
+       /* if (mComponent == null) {
 
             mComponent = DaggerRxApp_NetworkComponent.create();
         }
-
+*/
         sInstance = (RxApp) getApplicationContext();
     }
 
-    public NetworkComponent component() {
+/*    public NetworkComponent component() {
         return mComponent;
     }
 
     // This allows providing mock NetworkComponent from test
     public void setComponent(NetworkComponent component) {
         mComponent = component;
-    }
+    }*/
+
+
 }

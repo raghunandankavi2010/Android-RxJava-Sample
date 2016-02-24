@@ -2,6 +2,8 @@ package com.anupcowkur.mvpsample.ui.activities;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.anupcowkur.mvpsample.R;
 //import com.anupcowkur.mvpsample.RxBus;
@@ -20,11 +21,8 @@ import com.anupcowkur.mvpsample.ui.decorators.DividerItemDecoration;
 import com.anupcowkur.mvpsample.ui.presenters.PostsPresenter;
 import com.anupcowkur.mvpsample.ui.screen_contracts.PostsScreen;
 
-import java.util.ArrayList;
 import java.util.List;
 
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -38,44 +36,48 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     private PostsListAdapter postsListAdapter;
     private static final String REQUEST_PEDNING = "request_pending";
 
-    @Override
-    public void onError(Throwable e) {
-        mRequestPending = false;
-        postsRecyclerView.setVisibility(View.GONE);
-        errorView.setVisibility(View.VISIBLE);
-        if (loadMore) {
-            loadMore = false;
-            Log.i("Load More",""+loadMore);
-            postsListAdapter.remove();
-        }
-    }
-
-    @Override
-    public void onNext(final List<Post> newPosts) {
-        errorView.setVisibility(View.GONE);
-        postsRecyclerView.setVisibility(View.VISIBLE);
-        Log.i("Size in on Next",""+newPosts.size());
-        if (loadMore) {
-            loadMore = false;
-            Log.i("Load More",""+loadMore);
-            postsListAdapter.remove();
-        }
-        postsListAdapter.addPosts(newPosts);
-
-        mRequestPending = false;
+    private LoaderManager.LoaderCallbacks<List<Post>>
+            mLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<List<Post>>() {
+                @Override
+                public Loader<List<Post>> onCreateLoader(
+                        int id, Bundle args) {
 
 
-    }
+                    return postsPresenter;
+                }
+                @Override
+                public void onLoadFinished(
+                        Loader<List<Post>> loader, List<Post> data) {
+                    // Display our data, for instance updating our adapter
 
-    @Override
-    public void onCompleted() {
-        loadMore =false;
-        mRequestPending = false;
-        Toast.makeText(PostsActivity.this.getApplicationContext(), "Completed", Toast.LENGTH_SHORT)
-                .show();
-    }
+                    errorView.setVisibility(View.GONE);
+                    postsRecyclerView.setVisibility(View.VISIBLE);
+                    Log.i("Size in on Next",""+data.size());
+                    if (loadMore) {
+                        loadMore = false;
+                        Log.i("Load More",""+loadMore);
+                        postsListAdapter.remove();
+                    }
+                    postsListAdapter.addPosts(data);
 
-    @Inject
+                    mRequestPending = false;
+                }
+                @Override
+                public void onLoaderReset(Loader<List<Post>> loader) {
+                    // Loader reset, throw away our data,
+                    // unregister any listeners, etc.
+                    postsListAdapter.addPosts(null);
+                    //loader.reset();
+                    // Of course, unless you use destroyLoader(),
+                    // this is called when everything is already dying
+                    // so a completely empty onLoaderReset() is
+                    // totally acceptable
+                }
+            };
+
+
+
     PostsPresenter postsPresenter;
 
     @Bind(R.id.posts_recycler_view)
@@ -94,7 +96,14 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         loadMore = true;
         mRequestPending = true;
         postsListAdapter.add(null);
-        postsPresenter.loadPostsFromAPI();
+        Loader loader =getSupportLoaderManager().getLoader(0);
+        loader.reset();
+        loader.forceLoad();
+        /*postsPresenter = new PostsPresenter(this);
+        postsPresenter.setContext(this);
+        postsPresenter.refresh(true);*/
+
+
     }
 
     private Handler handler;
@@ -106,23 +115,27 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
 
         setContentView(R.layout.activity_posts);
 
+        postsPresenter = new PostsPresenter(PostsActivity.this);
+        postsPresenter.setContext(PostsActivity.this);
 
         //rxBus = RxBus.getInstance();
         handler = new Handler();
         DaggerInjector.get().inject(this);
-        postsPresenter.setContext(this);
+        //
         ButterKnife.bind(this);
 
+
+
         initRecyclerView();
-        if (savedInstanceState != null) {
+       /* if (savedInstanceState != null) {
             boolean bool = savedInstanceState.getBoolean(REQUEST_PEDNING, false);
-            /* Continuing to load data from server. Request was already made */
+            *//* Continuing to load data from server. Request was already made *//*
             if (bool) {
                 loadMore = savedInstanceState.getBoolean("loadMore", loadMore);
                 postsPresenter.loadPostsFromAPI();
                 Toast.makeText(getApplicationContext(), "Continuing Subscription", Toast.LENGTH_SHORT).show();
             }
-            /* list after rotation. Handling configuration change */
+            *//* list after rotation. Handling configuration change *//*
             if (savedInstanceState.containsKey("saving list")) {
 
                 Toast.makeText(getApplicationContext(), "List display", Toast.LENGTH_SHORT).show();
@@ -130,7 +143,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
                 if (post != null && post.size() > 0)
                     postsListAdapter.addPosts(post);
             }
-            /* cache is reset no data. so try getting data from server again */
+            *//* cache is reset no data. so try getting data from server again *//*
             else {
                 postsPresenter.loadPostsFromAPI();
                 mRequestPending = true;
@@ -140,7 +153,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
             postsPresenter.loadPostsFromAPI();
             mRequestPending = true;
 
-        }
+        }*/
     }
 
     @Override
@@ -152,7 +165,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
     @Override
     protected void onStop() {
         super.onStop();
-        postsPresenter.unSubScribe();
+        //postsPresenter.unSubScribe();
         EventBus.getDefault().unregister(this);
     }
 
@@ -170,23 +183,24 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
                 DividerItemDecoration.VERTICAL_LIST));
         postsListAdapter = new PostsListAdapter();
         postsRecyclerView.setAdapter(postsListAdapter);
+        getSupportLoaderManager().initLoader(0, null, mLoaderCallbacks);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (postsListAdapter.getPosts().size() > 0) {
+       /* if (postsListAdapter.getPosts().size() > 0) {
             outState.putString("saving list", "yes");
             //postsPresenter.setListData(postsListAdapter.getPosts());
             outState.putParcelableArrayList("list", (ArrayList<Post>) postsListAdapter.getPosts());
         }
         outState.putBoolean(REQUEST_PEDNING, mRequestPending);
-        outState.putBoolean("loadMore", loadMore);
+        outState.putBoolean("loadMore", loadMore);*/
 
 
     }
 
-     public void onEventMainThread(List<Post> newPosts) {
+    /* public void onEventMainThread(List<Post> newPosts) {
          errorView.setVisibility(View.GONE);
          postsRecyclerView.setVisibility(View.VISIBLE);
          Log.i("Size in on Next",""+newPosts.size());
@@ -198,7 +212,7 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
          postsListAdapter.addPosts(newPosts);
 
          mRequestPending = false;
-    }
+    }*/
 
     public void onEventMainThread(Throwable errorEvent) {
         showError(errorEvent);
@@ -221,22 +235,21 @@ public class PostsActivity extends AppCompatActivity implements PostsScreen {
         }
     }
 
-  /*  @Override
-    public void getData(List<Post> mPost) {
-        postsListAdapter.addPosts(mPost);
+
+
+
+    @Override
+    public void onError(Throwable e) {
+
     }
 
     @Override
-    public void getError(Throwable mError) {
+    public void onNext(List<Post> posts) {
 
-        postsRecyclerView.setVisibility(View.VISIBLE);
-        errorView.setVisibility(View.GONE);
     }
 
     @Override
-    public void getCompleted() {
+    public void onCompleted() {
 
-    }*/
-
-
+    }
 }

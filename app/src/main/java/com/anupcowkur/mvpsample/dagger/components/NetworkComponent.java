@@ -1,5 +1,8 @@
 package com.anupcowkur.mvpsample.dagger.components;
 
+import android.support.v7.app.AppCompatActivity;
+
+import com.anupcowkur.mvpsample.dagger.UserScope;
 import com.anupcowkur.mvpsample.dagger.modules.AppModule;
 import com.anupcowkur.mvpsample.dagger.modules.NetworkModule;
 import com.anupcowkur.mvpsample.model.PostsAPI;
@@ -15,9 +18,14 @@ import dagger.Component;
 /**
  * Created by Raghunandan on 15-12-2015.
  */
-@Component(modules = {NetworkModule.class,AppModule.class})
-@Singleton
+@UserScope
+@Component(dependencies = AppCompatActivity.class,modules =NetworkModule.class)
 public interface NetworkComponent {
     void inject(PostsAPI postsAPI);
+    void inject(PostsPresenter postsPresenter);
+
+
+
+
 
 }

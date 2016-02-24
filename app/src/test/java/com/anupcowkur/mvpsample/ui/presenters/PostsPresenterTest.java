@@ -24,11 +24,11 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @PrepareForTest({Observable.class, AndroidSchedulers.class})
 public class PostsPresenterTest{
 
-    private PostsPresenter postsPresenter;
+    private PostsPresenter<P> postsPresenter;
 
     @Before
     public void setUp() throws Exception {
-        postsPresenter = spy(new PostsPresenter(mock(PostsAPI.class)));
+        postsPresenter = spy(new PostsPresenter<P>(mock(PostsAPI.class)));
 
     }
 

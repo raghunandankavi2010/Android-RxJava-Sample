@@ -19,6 +19,7 @@ import retrofit.Retrofit;
 import retrofit.http.GET;
 import rx.Observable;
 import rx.Subscriber;
+import retrofit.RxJavaCallAdapterFactory;
 
 public class PostsAPI {
 
@@ -36,7 +37,7 @@ public class PostsAPI {
     public interface PostService {
 
         @GET("/posts")
-        Call<List<Post>> getPosts();
+        Observable<List<Post>> getPosts();
 
     }
 
@@ -47,7 +48,8 @@ public class PostsAPI {
 
     public Observable<List<Post>> getPost()
     {
-        postsObservable = Observable.create(new Observable.OnSubscribe<List<Post>>() {
+        postsObservable = getApi().getPosts();
+       /* postsObservable = Observable.create(new Observable.OnSubscribe<List<Post>>() {
         @Override
         public void call(final Subscriber<? super List<Post>> subscriber) {
 
@@ -81,8 +83,9 @@ public class PostsAPI {
                 }
             });
         }
-    });
+    });*/
         postsObservable.cache();
+        Log.i("get api",""+"called");
         return postsObservable;
     }
 
@@ -107,11 +110,12 @@ public class PostsAPI {
 
     PostService getApi() {
 
-        Log.i("get api",""+"called");
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://jsonplaceholder.typicode.com")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
 

@@ -1,6 +1,7 @@
 package com.anupcowkur.mvpsample.ui.presenters;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 //import com.anupcowkur.mvpsample.RxBus;
@@ -28,47 +29,70 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 
-public class PostsPresenter {
+public class PostsPresenter extends Loader<List<Post>> {
 
-    private PostsAPI postsAPI;
+    @Inject
+    PostsAPI postsAPI;
     private Observable<List<Post>> m;
+
+    boolean mLoadMore;
     //RxBus bus;
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
-    private List<Post> postList = new ArrayList<>();
+    private CompositeSubscription compositeSubscription ;
+    private List<Post> postList ;
+    private List<Post> newData = new ArrayList<>();
 
     PostsScreen getdetails;
 
-    @Inject
-    public PostsPresenter(PostsAPI postsAPI) {
-        this.postsAPI = postsAPI;
-        Log.i("Presenter","called");
-        DaggerInjector.get().inject(this);
-       // bus = RxBus.getInstance();
-
+    public PostsPresenter(Context context) {
+        super(context);
+        DaggerInjector.getNet().inject(this);
 
     }
 
-/*    public void getRequest()
-    {
-        m= postsAPI.getPostsObservable();
-        compositeSubscription.add(m.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers
-                .mainThread())
-                .subscribe(new MySubscriber()));
-    }*/
-
-    public void loadPostsFromAPI() {
+    @Override
+    protected void onForceLoad() {
+        super.onForceLoad();
+        compositeSubscription = new CompositeSubscription();
         m = postsAPI.getPost();
-
-        //compositeSubscription.add(m);
-
         compositeSubscription.add(m.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers
                 .mainThread())
                 .subscribe(new MySubscriber()));
 
     }
 
-    public void unSubScribe()
-    {
+
+
+ /*   @Override
+    public void deliverResult(List<Post> data) {
+        // We’ll save the data for later retrieval
+        postList = data;
+        // We can do any pre-processing we want here
+        // Just remember this is on the UI thread so nothing lengthy!
+        super.deliverResult
+    }*/
+    @Override
+    protected void onStartLoading() {;
+
+        Log.i("New Data",""+newData.size());
+        if(postList!=null )
+        {
+            Log.i("New Data",""+newData.size());
+            deliverResult(newData);
+        }
+
+        if (takeContentChanged() || postList==null ) {
+            // Something has changed or we have no data,
+            // so kick off loading it
+            forceLoad();
+
+
+        }
+    }
+
+    @Override
+    protected void onReset() {
+
+        Log.i("Unsubscribed","Great");
         compositeSubscription.unsubscribe();
         getdetails = null;
     }
@@ -87,30 +111,50 @@ public class PostsPresenter {
 
         @Override
         public void onNext(List<Post> newPosts) {
-            Log.i("List fetched","Yeah");
-            //postsAPI.resetCache();
-            EventBus.getDefault().post(newPosts);
 
-
+            postList= newPosts;
+            newData.addAll(postList);
+            //forceLoad();
+            Log.i("List fetched","Yeah"+newData.size());
+            deliverResult(postList);
+            //EventBus.getDefault().post(newPosts);
 
         }
-
         @Override
         public void onCompleted() {
             Log.i("Completed","Completed");
-
         }
 
         @Override
         public void onError(Throwable e) {
             Log.i("ERROR","Something Wrong");
+            e.printStackTrace();
             //postsAPI.resetCache();
-            EventBus.getDefault().post(e);
-
+            //EventBus.getDefault().post(e);
 
         }
 
-
-
     }
+
+/*    @Override
+    public void deliverResult(List<Post> data)
+    {
+        *//*if(isReset())
+        {
+
+        }
+        List<Post> oldData = postList;
+        postList = data;*//*
+        if(isStarted())
+        {
+            Log.i("...............","..........."+data.size());
+
+            super.deliverResult(data);
+        }
+       *//* if(oldData!=null && oldData!=data)
+        {
+
+        }*//*
+    }*/
+
 }

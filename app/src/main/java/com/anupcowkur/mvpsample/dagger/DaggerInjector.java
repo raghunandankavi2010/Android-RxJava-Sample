@@ -19,7 +19,7 @@ public class DaggerInjector {
 
     private static NetworkComponent netComponent = DaggerNetworkComponent.builder()
 
-            .appModule(new AppModule())
+            .networkModule(new NetworkModule())
             .build();
 
     public static NetworkComponent getNet() {

@@ -1,8 +1,11 @@
 package com.anupcowkur.mvpsample.dagger.modules;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.anupcowkur.mvpsample.dagger.UserScope;
+import com.anupcowkur.mvpsample.model.PostsAPI;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -28,7 +31,7 @@ public class NetworkModule {
 
     @Provides
     @Named("cached")
-    @Singleton
+    @UserScope
     Cache provideOkHttpCache(Application application) {
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache =null;
@@ -42,7 +45,7 @@ public class NetworkModule {
     }
 
     @Provides
-    @Singleton
+    @UserScope
     OkHttpClient provideOkHttpClient() {
         final OkHttpClient client = new OkHttpClient();
          client.setConnectTimeout(5, TimeUnit.SECONDS); // connect timeout
@@ -88,6 +91,14 @@ public class NetworkModule {
         } catch (final IOException e) {
             return "did not work";
         }
+    }
+
+    @Provides
+    @UserScope
+    PostsAPIGet providePostsApi(PostsAPI postsAPI)
+
+    {
+        return new PostsAPIGet(postsAPI);
     }
 }
 

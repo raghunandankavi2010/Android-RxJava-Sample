@@ -1,0 +1,10 @@
+diff a/app/build.gradle b/app/build.gradle	(rejected hunks)
+@@ -79,7 +79,7 @@
+     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
+ 
+     testCompile 'junit:junit:4.12'
+-    testCompile 'org.mockito:mockito-core:1.9.5'
++    testCompile 'org.mockito:mockito-core:2.0.5-beta'
+     testCompile 'org.powermock:powermock-api-mockito:1.5.6'
+     testCompile 'org.powermock:powermock-module-junit4:1.6.2'
+ 
