@@ -1,9 +1,5 @@
 # MVP with RxJava, DAGGER 2, and RETROFIT
-A sample project showing the use of MVP in android. This is forked repository and modified for the sake of learning. 
-
-Part of learning process of implementing MVP design pattern in android. Thanks to the Author (Anup Cowkur).
-
-Presented as part of talk by Anup Cowkur at Bangalore Android Users Group: [Wrting Better Android Apps with MVP](http://slides.com/anupcowkur/writing-better-android-apps-with-mvp).
+A sample project showing the use of MVP in android based on what i learnt at a android meetup.
 
 Note :
 
